@@ -1,0 +1,68 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: purple;
+}
+
+#app{
+    width: 500px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 20px;
+    border: solid 1px #ccc;
+}
+
+#time{
+    text-align: center;
+    padding: 20px;
+
+}
+
+.form{
+    display: flex;
+    justify-content: center;
+}
+
+#time #value{
+    font-size: 48px;
+    font-weight: bold;
+}
+
+input[type= "text"]{
+    padding: 10px;
+    border: solid 1px #ccc;
+    width: 300px;
+}
+
+button, input[type="submit"]{
+    border: none;
+    background-color: #003366;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#tasks{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.task{
+    display: flex;
+    gap:10px;
+    align-items: center;
+}
+
+.task .completed{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    gap:10px;
+}
+
+.done{
+    display: inline-block;
+    padding: 5px;
+    background-color: #ccc;
+}
