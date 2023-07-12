@@ -7,6 +7,18 @@ const buttonAdd = document.querySelector('#bAdd')
 
 const eventsContainer = document.querySelector('.eventsContainer')
 
+const json = load()
+
+//Va aparsear si hay informacion guardada, la carga y se la asigna al arreglo de eventos
+try {
+    arr = JSON.parse(json)
+}catch(error){
+    arr = []
+}
+events = arr?[...arr] : []
+//Para que se visualize la informacion cargada
+renderEvents()
+
 document.querySelector('form').addEventListener('submit', e => {
     e.preventDefault();
     addEvent();
@@ -30,6 +42,8 @@ function addEvent() {
     }
 
     events.unshift(newEvent)
+
+    save(JSON.stringify(events))
 
     eventName.value = "";
 
@@ -68,7 +82,18 @@ function renderEvents(){
         button.addEventListener('click', e =>{
             const id = button.getAttribute('data-id')
             events = events.filter(event => event.id !== id)
+            save(JSON.stringify(events))
             renderEvents()
         })
     })
 }
+
+
+function save(data){
+    localStorage.setItem('items', data)
+}
+
+function load(){
+    return localStorage.getItem('items')
+}
+
