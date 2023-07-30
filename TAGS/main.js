@@ -9,7 +9,7 @@ inputTag.contentEditable = 'true'// Hace que nuestro span sea editable, el conte
 inputTag.classList.add('input')
 inputTag.focus()
 
-inputTagContainer.classList.add("input-tag-container")
+inputTagContainer.classList.add("input-tag-container")// Darle estilos a
 tagsContainer.classList.add("tag-container")
 
 inputTagContainer.appendChild(tagsContainer)
@@ -24,13 +24,23 @@ inputTagContainer.addEventListener("click", e => {
 inputTag.addEventListener('keydown', e => {
     if (e.key === 'Enter' && inputTag.textContent !== ''){
         e.preventDefault()
-        tags.push(inputTag.textContent)
-        inputTag.textContent = ''//Elimino el contenido para renderizarlo en una etiqueta en vez de solo texto
+        /*if (tags.length !== 0){//Mi posible solucion
+            tags.pop()
+        }*/
+        if(!existTag(inputTag.textContent)){
+            tags.push(inputTag.textContent)
+            inputTag.textContent = ''//Elimino el contenido para renderizarlo en una etiqueta en vez de solo texto
+            renderTags()
+        }
+    }else if(e.key === 'Backspace' && inputTag.textContent === '' && tags.length > 0){
+        tags.pop()
         renderTags()
     }
+       
 })
 
 function renderTags(){
+    tagsContainer.innerHTML= ''
     const html = tags.map(tag => {
         const tagElement =  document.createElement('div')
         const tagButton = document.createElement('button')
@@ -38,7 +48,7 @@ function renderTags(){
         tagElement.classList.add('tag-item')
         tagButton.textContent = 'X'
         tagButton.addEventListener('click', e =>{
-            //eliminar etiqueta
+            removeTag(tag)
         })
         tagElement.appendChild(document.createTextNode(tag))
         tagElement.appendChild(tagButton)
@@ -50,3 +60,16 @@ function renderTags(){
     tagsContainer.appendChild(inputTag)
     inputTag.focus()
 }
+
+//Comprobar si existe un valor en el arreglo de tags
+function existTag(value){
+    return tags.includes(value)
+}
+
+//Eliminar Etiqueta
+function removeTag(value){
+    tags = tags.filter(tag => tag !== value)
+    renderTags()
+}
+
+
