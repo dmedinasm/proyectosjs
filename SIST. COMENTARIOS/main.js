@@ -13,7 +13,7 @@ commentsContainer.appendChild(inputContainer);
 inputContainer.appendChild(input)
 
 function handleEnter(e, current){
-    if(e.key === 'Enter' && e.target.value !== ''){
+    if(e.key === 'Enter' && e.target.value !== ''){// Si la tecla esta presionada y el valor es diferente de un string vacio
         const newComment = {
             text: e.target.value,
             likes:0,
@@ -41,10 +41,10 @@ function renderComments(arr, parent){
         const responsesContainer = document.createElement('div')//Y a su vez voy a tener otra capa en donde voy a almacenar todas las respuestas
         responsesContainer.classList.add('responses-container')
 
-        const replyButton = document.createElement('button')
-        const likeButton = document.createElement('button')
+        const replyButton = document.createElement('button')//Boton de respuesta
+        const likeButton = document.createElement('button')//Boton de likes
 
-        const textContainer = document.createElement('div')
+        const textContainer = document.createElement('div')//Texto del comentario
         textContainer.textContent =  element.text
 
         const actionsContainer = document.createElement('div')
