@@ -3,7 +3,7 @@ const db = {
         find: (id) => {
             return db.items.find(item => item.id === id)
         },
-        // Este metodo lo vamos a utilizar cuando hagamos la compra en nuestro carrito de compra
+        // Este metodo lo vamos a utilizar cuando hagamos la compra en nuestro carrito de compra, se elimina producto del stock de db
         remove: (items) => {
             items.forEach(item => {
                 const product =  db.methods.find(item.id)
@@ -33,6 +33,12 @@ const db = {
             title: 'Phillis Hue',
             price: 1300,
             qty: 80
+        },
+        {
+            id:3,
+            title: 'Ipod',
+            price: 6000,
+            qty: 8
         }
     ]
 }
@@ -75,13 +81,63 @@ const shoppingCart = {
         getTotal:() => {
             const total = shoppingCart.items.reduce((acc, item) => {//Aqui utilizo el metodo reduce para obtener el valor total de la compra, suma total de precio de cada producto * cantidad del producto
                 const found = db.items.find(item.id)
-                return (acc += found.price * item.qty)
-            })
+                return (acc + found.price * item.qty)
+            }, 0)
             return total
         },//Suma de los elementos de mi carrito de compra
         hasInventory: (id, qty) => {
-            return db.items.find(item => item.id === id).qty >= 0// Evalua si realmente existen en inventario esta cantidad de x articulos
+            return db.items.find(item => item.id === id).qty - qty >= 0// Evalua si realmente existen en inventario esta cantidad de x articulos
         },//No puedo comprar mas que el inventario que actualmente existe
-        purchase: () =>{}//Compra todo lo que tengo en el carrito de compra
+        purchase: () =>{
+            db.methods.remove(shoppingCart.items)//Al comprar los productos eliminamos de la base de datos del total de existencias de cada producto sustraemos la cantidad(qty) del producto que compramos
+            shoppingCart.items = []
+        }//Compra todo lo que tengo en el carrito de compra
     }
+}
+
+
+// Lo primero que quiero que aparezca es la tienda, los elementos que puedo comprar
+renderStore()
+
+function renderStore(){
+    const html = db.items.map(item => {
+        return `
+            <div class= "item">
+                 <div class="title">${item.title}</div>
+                 <div class="price">${numberToCurrency(item.price)}</div>
+                 <div class="qty">${item.qty}</div>
+
+                 <div class="actions">
+                     <button class="add" data-id ="${item.id}">Add to Shopping Cart</button>
+                 </div>
+            </div>
+        `
+    })
+
+    document.querySelector('#store-container').innerHTML = html.join("")//Une todos los strings del array a un solo string
+
+    document.querySelectorAll('.item .actions .add').forEach(button =>{
+        button.addEventListener('click', e =>{
+            const id = button.getAttribute("data-id")
+            const item = db.methods.find(id)
+
+            if(item && item.qty -1 > 0){
+                //anadir a ShoppingCart
+                shoppingCart.methods.add(id, 1)
+                renderShoppingCart()
+            }else {
+                console.log('Ya no hay inventario')
+            }
+        } )
+    })
+}
+
+
+//Convertir numero a moneda dolar
+function numberToCurrency(n){
+    return new Intl.NumberFormat("en-US", {
+        maximumSignificantDigits: 2,
+        style: "currency",
+        currency: "USD",
+    }).format(n)
 }
