@@ -80,8 +80,8 @@ const shoppingCart = {
         },
         getTotal:() => {
             const total = shoppingCart.items.reduce((acc, item) => {//Aqui utilizo el metodo reduce para obtener el valor total de la compra, suma total de precio de cada producto * cantidad del producto
-                const found = db.items.find(item.id)
-                return (acc + found.price * item.qty)
+                const found = (db.methods.find(item.id))
+                return acc + found.price * item.qty
             }, 0)
             return total
         },//Suma de los elementos de mi carrito de compra
@@ -105,23 +105,22 @@ function renderStore(){
             <div class= "item">
                  <div class="title">${item.title}</div>
                  <div class="price">${numberToCurrency(item.price)}</div>
-                 <div class="qty">${item.qty}</div>
+                 <div class="qty">${item.qty} units</div>
 
                  <div class="actions">
-                     <button class="add" data-id ="${item.id}">Add to Shopping Cart</button>
+                     <button class="add" data-id="${item.id}">Add to Shopping Cart</button>
                  </div>
             </div>
         `
     })
-
-    document.querySelector('#store-container').innerHTML = html.join("")//Une todos los strings del array a un solo string
+    
+    document.querySelector('#store-container').innerHTML = (html.join(""))//Une todos los strings del array a un solo string
 
     document.querySelectorAll('.item .actions .add').forEach(button =>{
         button.addEventListener('click', e =>{
-            const id = button.getAttribute("data-id")
+            const id = parseInt(button.getAttribute("data-id"))//id es de tipo number necesito llevarlo a number ya que .getAtribute me lo de en string 
             const item = db.methods.find(id)
-
-            if(item && item.qty -1 > 0){
+            if(item && item.qty - 1 > 0){
                 //anadir a ShoppingCart
                 shoppingCart.methods.add(id, 1)
                 renderShoppingCart()
@@ -140,4 +139,41 @@ function numberToCurrency(n){
         style: "currency",
         currency: "USD",
     }).format(n)
+}
+
+function renderShoppingCart(){
+    const html = shoppingCart.items.map(item =>{
+        const dbItem = db.methods.find(item.id)
+
+        return`
+            <div class="item">
+              <div class="title">${dbItem.title}</div>
+              <div class="price">${numberToCurrency(dbItem.price)}</div>
+              <div class="qty">${item.qty} units</div>
+              <subtotal class="subtotal">Subtotal:${numberToCurrency(item.qty * db.items.price)}</div>
+              <div class="actions">
+                   <button ="addOne" data-id="${item.id}">+</button>
+                   <button ="removeOne" data-id="${item.id}">-</button>
+              </div>
+            </div>
+        `
+
+    })
+
+    const closeButton =` 
+         <div class="cart-header">
+              <button class="bClose">Close</button>
+         </div>
+    `
+
+    const purchaseButton =shoppingCart.items.length > 0 ? `
+    <div class="cart-actions>
+         <button class="bPurchase">Purchase</button>
+    ` : ''
+
+    const total = shoppingCart.methods.getTotal()
+    const totalContainer = `<div class="total">Total: ${numberToCurrency(total)}</div>`
+
+    const shoppingCartContainer = document.querySelector('#shopping-cart-container')
+    shoppingCartContainer.innerHTML = closeButton + html.join() + totalContainer + purchaseButton // este es el html del carrito de compra
 }
