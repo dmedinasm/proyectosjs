@@ -150,10 +150,10 @@ function renderShoppingCart(){
               <div class="title">${dbItem.title}</div>
               <div class="price">${numberToCurrency(dbItem.price)}</div>
               <div class="qty">${item.qty} units</div>
-              <subtotal class="subtotal">Subtotal:${numberToCurrency(item.qty * db.items.price)}</div>
+              <subtotal class="subtotal">Subtotal:${numberToCurrency(item.qty * dbItem.price)}</div>
               <div class="actions">
-                   <button ="addOne" data-id="${item.id}">+</button>
-                   <button ="removeOne" data-id="${item.id}">-</button>
+                   <button class="addOne" data-id="${item.id}">+</button>
+                   <button class="removeOne" data-id="${item.id}">-</button>
               </div>
             </div>
         `
@@ -166,14 +166,49 @@ function renderShoppingCart(){
          </div>
     `
 
-    const purchaseButton =shoppingCart.items.length > 0 ? `
-    <div class="cart-actions>
-         <button class="bPurchase">Purchase</button>
-    ` : ''
+    const purchaseButton = shoppingCart.items.length > 0 ? 
+    `<div class="cart-actions">
+      <button id="bPurchase">Purchase</button>
+    </div>`
+     : ''
 
     const total = shoppingCart.methods.getTotal()
     const totalContainer = `<div class="total">Total: ${numberToCurrency(total)}</div>`
 
     const shoppingCartContainer = document.querySelector('#shopping-cart-container')
-    shoppingCartContainer.innerHTML = closeButton + html.join() + totalContainer + purchaseButton // este es el html del carrito de compra
+    shoppingCartContainer.classList.add("show")
+    shoppingCartContainer.classList.remove("hide")
+    shoppingCartContainer.innerHTML = closeButton + html.join("") + totalContainer + purchaseButton // este es el html del carrito de compra
+
+    document.querySelectorAll('.addOne').forEach(button =>{
+        button.addEventListener('click', e =>{
+            const id = parseInt(button.getAttribute("data-id"))
+            shoppingCart.methods.add(id, 1)
+            renderShoppingCart()
+        })
+    })
+
+    document.querySelectorAll('.removeOne').forEach(button =>{
+        button.addEventListener('click', e =>{
+            const id = parseInt(button.getAttribute("data-id"))
+            shoppingCart.methods.remove(id, 1)
+            renderShoppingCart()
+        })
+    })
+
+    document.querySelector('.bClose').addEventListener('click', e =>{
+        shoppingCartContainer.classList.remove("show")
+        shoppingCartContainer.classList.add("hide")
+    })
+
+    const bPurchase = document.querySelector('#bPurchase')
+    if(bPurchase){//Ya con el simple hecho de que exista el boton de compra significa que si esta en inventario el producto
+        bPurchase.addEventListener('click', e => {
+            shoppingCart.methods.purchase()
+            renderStore()
+            renderShoppingCart()
+            shoppingCartContainer.innerHTML = ''
+            shoppingCartContainer.classList.add("hide")
+        })
+    }
 }
